@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PakGov Document Keyword Search CLI
 
 **CS50P Final Project by Salik**
@@ -36,3 +37,7 @@ This is the seed project for my larger PAKGOV-RAG bilingual NLP system.
 File I/O, functions, modules, exceptions, CSV, regex, and CLI design.
 
 Built for CS50P Harvard.
+=======
+# Pakgov-search-cli
+CS50P Final  Project: CLI tool to search pakistani goverment documents.Built with python
+>>>>>>> cfabc3484040cd39a160c3eb0803682a2d2c4106
