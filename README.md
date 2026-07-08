@@ -1,43 +1,27 @@
-<<<<<<< HEAD
-# PakGov Document Keyword Search CLI
+# PakGov Document Search CLI
 
-**CS50P Final Project by Salik**
-**Start: July 2026 | End: August 2026**
+A command-line tool built in Python to search keywords across multiple Pakistani government text documents. This was my CS50P Final Project.
 
-## What is this?
-A command-line tool to search Pakistani government document extracts.
-User enters a keyword. Tool scans all.txt files in `docs/` and returns
-filename, line number, and context.
+## Problem
+Government employees, researchers, and students often need to find specific information across hundreds of text files and PDFs. Doing this manually is slow and error-prone.
 
-This is the seed project for my larger PAKGOV-RAG bilingual NLP system.
+## Solution
+PakGov Search CLI scans all `.txt` files inside a `docs/` folder, finds exact keyword matches, and shows 1 line of context before and after each match. Every search is automatically logged to a CSV file with a timestamp for record keeping.
 
 ## Features
-- Search by keyword in multiple.txt files
-- Shows 1 line before and after for context
-- Case insensitive search using regex
-- Saves search history to CSV with timestamp
-- Custom exceptions for empty input and missing folder
+- **Fast Keyword Search**: Search across multiple `.txt` files instantly
+- **Context Display**: Shows 1 line before and after each match for better understanding
+- **Search History**: All searches saved to `history.csv` with date and time
+- **Error Handling**: Custom exceptions for empty queries and missing folders
+- **Modular Code**: Clean separation using `document_reader.py` and `exceptions.py`
+
+## Technologies Used
+- **Language**: Python 3
+- **Libraries**: `os`, `csv`, `re`, `datetime`, `sys`
+- **Concepts**: File I/O, Regular Expressions, Custom Exceptions, CLI
 
 ## How to Run
-1. Put your.txt files inside the `docs/` folder
-2. Open terminal in this folder
-3. Run: `python search.py`
-4. Enter your keyword when asked
-
-## Files
-| File | Purpose |
-|------|---------|
-| `search.py` | Main program and search logic |
-| `document_reader.py` | Reads files from docs folder |
-| `exceptions.py` | Custom error handling |
-| `history.csv` | Logs all searches |
-| `docs/` | Folder for your documents |
-
-## What I Learned
-File I/O, functions, modules, exceptions, CSV, regex, and CLI design.
-
-Built for CS50P Harvard.
-=======
-# Pakgov-search-cli
-CS50P Final  Project: CLI tool to search pakistani goverment documents.Built with python
->>>>>>> cfabc3484040cd39a160c3eb0803682a2d2c4106
+1. Clone the repository
+   ```bash
+   git clone https://github.com/salikhussain71-code/Pakgov-search-cli.git
+   cd Pakgov-search-cli
