@@ -9,71 +9,96 @@ from exceptions import EmptyQueryError, FolderNotFoundError
 DOCS_FOLDER = "docs"
 HISTORY_FILE = "history.csv"
 
+
+def save_to_history(keyword, results_count):
+    """Save each search to history.csv with timestamp"""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    file_exists = os.path.isfile(HISTORY_FILE)
+    
+    with open(HISTORY_FILE, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["timestamp", "keyword", "results_found"])
+        writer.writerow([now, keyword, results_count])
+
+
+def search_in_file(filepath, keyword):
+    """Search keyword in one file and return matches with context"""
+    lines = read_lines(filepath)
+    matches = []
+    pattern = re.compile(re.escape(keyword), re.IGNORECASE)
+    
+    for i, line in enumerate(lines):
+        if pattern.search(line):
+            # get 1 line before and after for context
+            before = lines[i-1].strip() if i > 0 else ""
+            after = lines[i+1].strip() if i < len(lines) - 1 else ""
+            matches.append({
+                "line_num": i + 1,
+                "match": line.strip(),
+                "before": before,
+                "after": after
+            })
+    return matches
+
+
 def main():
     print("=== PakGov Document Search CLI ===")
+    print()
 
     # Check if docs folder exists
     if not os.path.exists(DOCS_FOLDER):
-        raise FolderNotFoundError(f"Folder '{DOCS_FOLDER}' not found")
+        raise FolderNotFoundError(f"Folder '{DOCS_FOLDER}' not found. Please create a 'docs' folder.")
 
     # Get keyword from user
     keyword = input("Enter keyword to search: ").strip()
-
+    
     if keyword == "":
-        raise EmptyQueryError("Query cannot be empty")
+        raise EmptyQueryError("Keyword cannot be empty.")
 
-    # Search
-    results = search_keyword(keyword)
+    print(f"\nSearching for '{keyword}' in {DOCS_FOLDER}...\n")
 
-    # Show results
-    if len(results) == 0:
-        print("No matches found.")
-    else:
-        for r in results:
-            print(f"\nFile: {r['file']} | Line: {r['line_num']}")
-            print(f"...{r['before']}")
-            print(f">>> {r['match']}")
-            print(f"...{r['after']}")
+    txt_files = get_txt_files(DOCS_FOLDER)
+    total_matches = 0
+
+    if not txt_files:
+        print("No .txt files found in docs folder.")
+        return
+
+    for filepath in txt_files:
+        filename = os.path.basename(filepath)
+        results = search_in_file(filepath, keyword)
+        
+        if results:
+            print(f"--- Found in: {filename} ---")
+            for r in results:
+                total_matches += 1
+                print(f"Line {r['line_num']}: {r['match']}")
+                if r['before']:
+                    print(f"  Context: ...{r['before']}")
+                if r['after']:
+                    print(f"           {r['after']}...")
+            print()
 
     # Save to history
-    save_history(keyword, len(results))
+    save_to_history(keyword, total_matches)
 
-def search_keyword(keyword):
-    """Search keyword in all txt files"""
-    results = []
-    files = get_txt_files(DOCS_FOLDER)
+    if total_matches == 0:
+        print(f"No matches found for '{keyword}'.")
+    else:
+        print(f"Total matches found: {total_matches}")
+        print(f"Search saved to {HISTORY_FILE}")
 
-    for file in files:
-        lines = read_lines(file)
-        for i in range(len(lines)):
-            # case insensitive search
-            if re.search(keyword, lines[i], re.IGNORECASE):
-                before = lines[i-1].strip() if i > 0 else ""
-                after = lines[i+1].strip() if i < len(lines)-1 else ""
-                results.append({
-                    "file": file,
-                    "line_num": i + 1,
-                    "before": before,
-                    "match": lines[i].strip(),
-                    "after": after
-                })
-    return results
-
-def save_history(keyword, count):
-    """Save search to CSV"""
-    with open(HISTORY_FILE, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        # write header only if file is new
-        if f.tell() == 0:
-            writer.writerow(["timestamp", "keyword", "results_count"])
-        writer.writerow([datetime.now(), keyword, count])
 
 if __name__ == "__main__":
     try:
         main()
-    except EmptyQueryError as e:
-        print(f"Error: {e}")
     except FolderNotFoundError as e:
         print(f"Error: {e}")
+        sys.exit(1)
+    except EmptyQueryError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Unexpected error: {e}")
+        sys.exit(1)
