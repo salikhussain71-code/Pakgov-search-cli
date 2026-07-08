@@ -1,14 +1,18 @@
 import os
 
 def get_txt_files(folder):
-    """Return list of all.txt files in folder"""
-    files = []
-    for name in os.listdir(folder):
-        if name.endswith(".txt"):
-            files.append(os.path.join(folder, name))
-    return files
+    """Return list of all .txt files in folder"""
+    txt_files = []
+    for filename in os.listdir(folder):
+        if filename.endswith(".txt"):
+            txt_files.append(os.path.join(folder, filename))
+    return txt_files
+
 
 def read_lines(filepath):
-    """Return all lines from a file"""
-    with open(filepath, "r", encoding="utf-8") as f:
-        return f.readlines()
+    """Read file and return list of lines"""
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return f.readlines()
+    except:
+        return []
